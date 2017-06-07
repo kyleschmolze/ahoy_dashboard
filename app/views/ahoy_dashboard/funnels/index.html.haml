@@ -1,0 +1,35 @@
+%h1 Ahoy Funnels
+= form_tag nil, method: :get do
+  .form-group
+    .row
+      .col-sm-1 Step 1:
+      .col-sm-3
+        = select_tag :first_event, options_for_select(@all_event_names, @first_event), class: 'form-control'
+      .col-sm-1 Step 2:
+      .col-sm-3
+        = select_tag :second_event, options_for_select(@all_event_names, @second_event), class: 'form-control'
+      .col-sm-2
+        = date_field_tag :start_date, @start_date.to_date, class: 'form-control'
+      .col-sm-2
+        = date_field_tag :end_date, @end_date.to_date, class: 'form-control'
+
+  .form-group
+    = column_chart @data
+
+  .form-group
+    .row
+      .col-sm-2.col-sm-offset-10
+        = submit_tag 'Load', class: 'btn btn-success btn-block'
+
+.row
+  .col-sm-6
+    %table.table
+      - for event, count in @data
+        %tr
+          %td= event
+          %td= count
+          - if n = @data[@data.to_a.index([event,count])+1]
+            %td #{(n.last * 100.0 / count).round(2)}%
+          - else
+            %td -
+

@@ -1,0 +1,33 @@
+%h1 Ahoy Events
+= form_tag nil, method: :get do
+  .form-group
+    .row
+      .col-sm-4
+        = select_tag :event_name, options_for_select(@all_event_names, @event_name), class: 'form-control'
+      .col-sm-2
+        = date_field_tag :start_date, @start_date.to_date, class: 'form-control'
+      .col-sm-2
+        = date_field_tag :end_date, @end_date.to_date, class: 'form-control'
+      .col-sm-2
+        = select_tag :period, options_for_select(['quarter', 'month', 'week', 'day'], @period), class: 'form-control'
+      .col-sm-2
+        = select_tag :uniqueness, options_for_select(['total', 'unique'], @uniqueness), class: 'form-control'
+  - if @keys
+    .form-group
+      .row
+        .col-sm-4
+          = select_tag :property_key, options_for_select(@keys, @key), class: 'form-control'
+        - if @values
+          .col-sm-4
+            = select_tag :property_value, options_for_select(@values, @value), class: 'form-control'
+        - else
+          .col-sm-4
+            = text_field_tag :property_value, @value, class: 'form-control'
+
+  .form-group
+    = line_chart @events
+
+  .form-group
+    .row
+      .col-sm-2.col-sm-offset-10
+        = submit_tag 'Load', class: 'btn btn-success btn-block'
