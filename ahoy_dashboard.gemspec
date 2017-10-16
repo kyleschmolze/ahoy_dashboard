@@ -22,6 +22,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "ahoy_matey"
+  spec.add_dependency "chartkick"
+  spec.add_dependency "groupdate"
   spec.add_dependency "activerecord"
   spec.add_dependency "haml"
 

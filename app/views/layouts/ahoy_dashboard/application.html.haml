@@ -1,8 +1,66 @@
 !!!
-%html
+%html{:lang => "en"}
   %head
     %title Ahoy Dashboard
+    %meta{:content => 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no', :name => 'viewport'}/
+    %meta{:charset => 'utf-8'}/
+    %link{:href => '//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css', :rel => 'stylesheet'}/
+    %link{:href => '//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css', :rel => 'stylesheet'}/
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+
+    = javascript_include_tag 'chartkick', 'jquery.textcomplete.min'
+
+    %link{:href => '//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css', :rel => 'stylesheet'}/
+    :javascript
+      $(function() {
+        var event_names = []
+        var event_keys = []
+        var event_values = []
+        $.get('events/names').then( (r) => event_names = r );
+        $('#name').textcomplete([{
+          match: /(^|\b)(.{0,})$/,
+          search: function (term, callback) {
+            callback($.map(event_names, function (word) {
+              return word.indexOf(term) >= 0 ? word : null;
+            }));
+          },
+          replace: (name) => {
+            $.get("events/keys?name="+name).then( (r) => event_keys = r );
+            return name
+          }
+        }]);
+
+        $('#key').textcomplete([{
+          match: /(^|\b)(.{0,})$/,
+          search: function (term, callback) {
+            callback($.map(event_keys, function (word) {
+              return word.indexOf(term) >= 0 ? word : null;
+            }));
+          },
+          replace: (key) => {
+            $.get("events/values?name="+$('#name').val()+"&key="+key).then( (r) => event_values = r );
+            return key
+          }
+        }]);
+
+        $('#value').textcomplete([{
+          match: /(^|\b)(.{0,})$/,
+          search: function (term, callback) {
+            callback($.map(event_values, function (word) {
+              return word.indexOf(term) >= 0 ? word : null;
+            }));
+          },
+          replace: (value) => {
+            return value
+          }
+        }]);
+      });
     :css
+      .textcomplete-item { padding: 5px 8px; }
+      .textcomplete-item.active { background-color: #eee; }
+    -#:css
       body {
         margin: 0;
         padding: 20px;
@@ -75,4 +133,4 @@
         padding-right: 10px;
       }
   %body
-    = yield
+    .container= yield

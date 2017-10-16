@@ -3,7 +3,7 @@
   .form-group
     .row
       .col-sm-4
-        = select_tag :event_name, options_for_select(@all_event_names, @event_name), class: 'form-control'
+        = text_field_tag :name, @name, class: 'form-control'
       .col-sm-2
         = date_field_tag :start_date, @start_date.to_date, class: 'form-control'
       .col-sm-2
@@ -12,22 +12,30 @@
         = select_tag :period, options_for_select(['quarter', 'month', 'week', 'day'], @period), class: 'form-control'
       .col-sm-2
         = select_tag :uniqueness, options_for_select(['total', 'unique'], @uniqueness), class: 'form-control'
-  - if @keys
-    .form-group
-      .row
-        .col-sm-4
-          = select_tag :property_key, options_for_select(@keys, @key), class: 'form-control'
-        - if @values
-          .col-sm-4
-            = select_tag :property_value, options_for_select(@values, @value), class: 'form-control'
-        - else
-          .col-sm-4
-            = text_field_tag :property_value, @value, class: 'form-control'
-
   .form-group
-    = line_chart @events
+    .row
+      .col-sm-4
+        = text_field_tag :key, @key, class: 'form-control'
+      .col-sm-4
+        = text_field_tag :value, @value, class: 'form-control'
 
   .form-group
     .row
       .col-sm-2.col-sm-offset-10
         = submit_tag 'Load', class: 'btn btn-success btn-block'
+
+  .form-group
+    = line_chart @events
+
+  .form-group
+    %small.text-muted= @explainer
+
+  .form-group
+    - unless @events.is_a? Array
+      %table.table
+        - for k,v in @events
+          %tr
+            %td= k
+            %td= v
+
+
