@@ -10,10 +10,13 @@ module AhoyDashboard
       @events = Ahoy::Event.where(name: @name)
       @events = @events.where(time: @start_date..@end_date)
 
-      if @key = params[:key] and @value = params[:value]
+      @key = params[:key]
+      @value = params[:value]
+      if @key.present? and @value.present?
         @events = @events.where_properties(@key => @value)
-        @explainer = @events.to_sql
       end
+
+      @explainer = @events.to_sql
       
       @events = @events.send("group_by_#{@period}", :time)
 

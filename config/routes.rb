@@ -5,6 +5,6 @@ AhoyDashboard::Engine.routes.draw do
   get 'events/values', to: 'events#values', as: :event_values
 
   resources :funnels, only: [:index]
-  root "events#index"
+  root to: redirect('events')
 end
 
