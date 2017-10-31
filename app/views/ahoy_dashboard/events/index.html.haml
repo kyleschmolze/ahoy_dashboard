@@ -1,41 +1,44 @@
-%h1 Ahoy Events
-= form_tag nil, method: :get do
-  .form-group
-    .row
-      .col-sm-4
-        = text_field_tag :name, @name, class: 'form-control'
-      .col-sm-2
-        = date_field_tag :start_date, @start_date.to_date, class: 'form-control'
-      .col-sm-2
-        = date_field_tag :end_date, @end_date.to_date, class: 'form-control'
-      .col-sm-2
-        = select_tag :period, options_for_select(['quarter', 'month', 'week', 'day'], @period), class: 'form-control'
-      .col-sm-2
-        = select_tag :uniqueness, options_for_select(['total', 'unique'], @uniqueness), class: 'form-control'
-  .form-group
-    .row
-      .col-sm-4
-        = text_field_tag :key, @key, class: 'form-control'
-      .col-sm-4
-        = text_field_tag :value, @value, class: 'form-control'
+.container
+  <br>
+  %h1 Ahoy Events
+  <br>
+  = form_tag nil, method: :get do
+    .form-group
+      .row
+        .col-sm-4
+          = text_field_tag :name, @name, class: 'form-control'
+        .col-sm-2
+          = date_field_tag :start_date, @start_date.to_date, class: 'form-control'
+        .col-sm-2
+          = date_field_tag :end_date, @end_date.to_date, class: 'form-control'
+        .col-sm-2
+          = select_tag :period, options_for_select(['quarter', 'month', 'week', 'day'], @period), class: 'form-control'
+        .col-sm-2
+          = select_tag :uniqueness, options_for_select(['total', 'unique'], @uniqueness), class: 'form-control'
+    .form-group
+      .row
+        .col-sm-4
+          = text_field_tag :key, @key, class: 'form-control'
+        .col-sm-4
+          = text_field_tag :value, @value, class: 'form-control'
 
-  .form-group
-    .row
-      .col-sm-2.col-sm-offset-10
-        = submit_tag 'Load', class: 'btn btn-success btn-block'
+    .form-group
+      .row
+        .col-sm-2.col-sm-offset-10
+          = submit_tag 'Load', class: 'btn btn-success btn-block'
 
-  .form-group
-    = line_chart @events
+    .form-group
+      = line_chart @events
 
-  .form-group
-    %small.text-muted= @explainer
+    .form-group
+      %small.text-muted= @explainer
 
-  .form-group
-    - unless @events.is_a? Array
-      %table.table
-        - for k,v in @events
-          %tr
-            %td= k
-            %td= v
+    .form-group
+      - unless @events.is_a? Array
+        %table.table
+          - for k,v in @events
+            %tr
+              %td= k
+              %td= v
 
 
