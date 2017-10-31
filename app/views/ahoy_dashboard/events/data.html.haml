@@ -1,0 +1,14 @@
+.form-group
+  = line_chart @events
+
+.form-group
+  %small.text-muted= @explainer
+
+.form-group
+  - unless @events.is_a? Array
+    %table.table
+      - for k,v in @events
+        %tr
+          %td= k
+          %td= v
+

@@ -2,29 +2,8 @@ module AhoyDashboard
   class EventsController < BaseController
 
     def index
-      @name = params[:name] || '$view'
-      @period = params[:period] || 'month'
-      @uniqueness = params[:uniqueness] || 'total'
-      @start_date = Date.parse(params[:start_date]).beginning_of_day rescue 6.months.ago.beginning_of_day
-      @end_date = Date.parse(params[:end_date]).beginning_of_day rescue DateTime.current
-      @events = Ahoy::Event.where(name: @name)
-      @events = @events.where(time: @start_date..@end_date)
-
-      @key = params[:key]
-      @value = params[:value]
-      if @key.present? and @value.present?
-        @events = @events.where_properties(@key => @value)
-      end
-
-      @explainer = @events.to_sql
-      
-      @events = @events.send("group_by_#{@period}", :time)
-
-      if @uniqueness == 'total'
-        @events = @events.count
-      else
-        @events = @events.joins(:ahoy_visit).pluck(:visitor_token).uniq.count
-      end
+      @start_date = 6.months.ago.beginning_of_day
+      @end_date = DateTime.current
     end
 
     def names
@@ -35,7 +14,7 @@ module AhoyDashboard
       name = params[:name]
       # should just use a cached list of all event names and confirm this is in them?
       if name.present? and Ahoy::Event.where(name: name).exists?
-        render json: ActiveRecord::Base.connection.exec_query("SELECT DISTINCT JSON_OBJECT_KEYS(properties) AS key FROM ahoy_events WHERE id = id AND name = '#{name}';").rows.flatten.to_json
+        render json: ActiveRecord::Base.connection.exec_query("SELECT DISTINCT JSON_OBJECT_KEYS(properties) AS key FROM ahoy_events WHERE id = id AND name = '#{name}';").rows.flatten.compact.sort.to_json
       else
         render json: []
       end
@@ -46,23 +25,34 @@ module AhoyDashboard
       name = params[:name]
       key = params[:key]
       if name.present? and key.present? and Ahoy::Event.where(name: name).exists?
-        render json: Ahoy::Event.uniq.where(name: name).pluck("properties->>'#{key}'").to_json
+        render json: Ahoy::Event.uniq.where(name: name).pluck("properties->>'#{key}'").compact.sort.to_json
       else
         render json: []
       end
     end
 
-    def funnels
-      @all_event_names = Ahoy::Event.uniq.pluck(:name).sort
-
-      @first_event = params[:first_event]
-      @second_event = params[:second_event]
+    def data
+      @name = params[:name]
+      @period = params[:period] || 'month'
+      @uniqueness = params[:uniqueness] || 'total'
       @start_date = Date.parse(params[:start_date]).beginning_of_day rescue 6.months.ago.beginning_of_day
       @end_date = Date.parse(params[:end_date]).beginning_of_day rescue DateTime.current
-      first = Ahoy::Event.where(time: @start_date..@end_date).where(name: @first_event).joins(:ahoy_visit).uniq.pluck(:visitor_token)
-      second = Ahoy::Event.where(time: @start_date..@end_date).where(name: @second_event).joins(:ahoy_visit).where(ahoy_visits: { visitor_token: first }).uniq.count
+      @events = Ahoy::Event.where(name: @name)
+      @events = @events.where(time: @start_date..@end_date)
 
-      @data = [ [@first_event , first.count], [@second_event , second ] ]
+      if params[:key].present? and params[:value].present?
+        @events = @events.where_properties(params[:key] => params[:value])
+      end
+
+      @explainer = @events.to_sql
+      @events = @events.send("group_by_#{@period}", :time)
+
+      if @uniqueness == 'total'
+        @events = @events.count
+      else
+        @events = @events.joins(:ahoy_visit).uniq.count('visitor_token')
+      end
+      render layout: false
     end
   end
 end

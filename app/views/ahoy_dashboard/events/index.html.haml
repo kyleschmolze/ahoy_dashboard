@@ -2,11 +2,11 @@
   <br>
   %h1 Ahoy Events
   <br>
-  = form_tag nil, method: :get do
+  = form_tag nil, class: 'event-form' do
     .form-group
       .row
         .col-sm-4
-          = text_field_tag :name, @name, class: 'form-control'
+          = select_tag :name, options_for_select(['Loading'], 'Loading'), class: 'form-control'
         .col-sm-2
           = date_field_tag :start_date, @start_date.to_date, class: 'form-control'
         .col-sm-2
@@ -18,27 +18,15 @@
     .form-group
       .row
         .col-sm-4
-          = text_field_tag :key, @key, class: 'form-control'
+          = select_tag :key, nil, class: 'form-control'
         .col-sm-4
-          = text_field_tag :value, @value, class: 'form-control'
+          = select_tag :value, nil, class: 'form-control'
 
     .form-group
       .row
         .col-sm-2.col-sm-offset-10
           = submit_tag 'Load', class: 'btn btn-success btn-block'
 
-    .form-group
-      = line_chart @events
-
-    .form-group
-      %small.text-muted= @explainer
-
-    .form-group
-      - unless @events.is_a? Array
-        %table.table
-          - for k,v in @events
-            %tr
-              %td= k
-              %td= v
 
 
+  .data
